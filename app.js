@@ -10,15 +10,12 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 
 const app = express();
-const PORT = 3000;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
 
 mongoose.connect(process.env.DB_API);
-
-app.set("trust proxy", 1);
 
 app.use(session({
   secret: 'This is our little secret.',
@@ -70,7 +67,7 @@ app.get("/", function(req, res){
 });
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile'] })
+  passport.authenticate('google', { scope: ['profile','email'] })
 );
 
 app.get('/auth/google/secrets',
