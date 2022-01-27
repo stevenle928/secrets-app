@@ -18,6 +18,8 @@ app.use(express.static(__dirname + "/public"));
 
 mongoose.connect(process.env.DB_API);
 
+app.set("trust proxy", 1);
+
 app.use(session({
   secret: 'This is our little secret.',
   resave: false,
