@@ -18,7 +18,7 @@ app.use(express.static(__dirname + "/public"));
 mongoose.connect(process.env.DB_API);
 
 app.use(session({
-  secret: 'This is our little secret.',
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
 }));
