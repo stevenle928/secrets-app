@@ -21,7 +21,7 @@ app.use(session({
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
-  maxAge: 1000*60*60*24
+  maxAge: 1000*60*360
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.plugin(passportLocalMongoose);
-userSchema.plugin(findOrCreate);
+// userSchema.plugin(findOrCreate);
 
 const User = mongoose.model("User", userSchema);
 
@@ -55,11 +55,23 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.TEST_SECRET,
     callbackURL: "https://secrets2.herokuapp.com/auth/google/secrets"
   },
-  function(accessToken, refreshToken, profile, cb) {
+  function(accessToken, refreshToken, profile, done) {
     // console.log(profile);
-    User.findOrCreate({ googleId: profile.id, username: profile.emails[0].value }, function (err, user) {
-      return cb(err, user);
-    });
+      User.findOne({"googleId": profile.id}, function(err, foundUser){
+        console.log(foundUser);
+        if(foundUser) {
+          done(null, oldUser);
+        } else {
+          const newUser = new User();
+          newUser.googleId = profile.id;
+          newUser.username = profile.emails[0].value;
+
+          newUser.save(function(err) {
+            if(err) {throw err;}
+            done(null, newUser);
+          });
+        }
+      });
   }
 ));
 
