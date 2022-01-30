@@ -25,7 +25,8 @@ app.use(cookieSession({
   keys: new Keygrip([process.env.KEY_SECRET1, process.env.KEY_SECRET2, process.env.KEY_SECRET3],'SHA256','base64'),
   resave: false,
   saveUninitialized: true,
-  maxAge: 1000*60*360
+  maxAge: 1000*60*360,
+  sameSite: true
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -35,7 +36,6 @@ const userSchema = new mongoose.Schema({
   password: String,
   googleId: String,
   secret: Array,
-  sameSite: true,
 });
 
 userSchema.plugin(passportLocalMongoose);
