@@ -8,7 +8,7 @@ const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const cookieSession = require('cookie-session');
-const keygrip = require('keygrip');
+const Keygrip = require('keygrip');
 const crypto = require('crypto');
 
 const app = express();
@@ -19,24 +19,26 @@ app.use(express.static(__dirname + "/public"));
 
 mongoose.connect(process.env.DB_URI);
 
+app.set('trust proxy', 1);
 app.use(cookieSession({
   name: 'secrets.app.session',
+  keys: new Keygrip([process.env.KEY_SECRET1, process.env.KEY_SECRET2, process.env.KEY_SECRET3],'SHA256','base64'),
   resave: false,
   saveUninitialized: true,
   maxAge: 1000*60*360
 }));
 app.use(passport.initialize());
-app.use(passport.cookieSession());
+app.use(passport.session());
 
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   googleId: String,
-  secret: Array
+  secret: Array,
+  sameSite: true,
 });
 
 userSchema.plugin(passportLocalMongoose);
-// userSchema.plugin(findOrCreate);
 
 const User = mongoose.model("User", userSchema);
 
