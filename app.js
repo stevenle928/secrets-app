@@ -7,7 +7,9 @@ const session = require('express-session');
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const findOrCreate = require('mongoose-findorcreate');
+const cookieSession = require('cookie-session');
+const keygrip = require('keygrip');
+const crypto = require('crypto');
 
 const app = express();
 
@@ -15,16 +17,16 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
 
-mongoose.connect(process.env.DB_API);
+mongoose.connect(process.env.DB_URI);
 
-app.use(session({
-  secret: process.env.SECRET,
+app.use(cookieSession({
+  name: 'secrets.app.session',
   resave: false,
   saveUninitialized: true,
   maxAge: 1000*60*360
 }));
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.cookieSession());
 
 const userSchema = new mongoose.Schema({
   email: String,
