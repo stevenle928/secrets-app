@@ -55,8 +55,8 @@ passport.deserializeUser(function(id, done) {
 });
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.TEST_ID,
-    clientSecret: process.env.TEST_SECRET,
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
     callbackURL: "https://secrets2.herokuapp.com/auth/google/secrets"
   },
   function(accessToken, refreshToken, profile, done) {
